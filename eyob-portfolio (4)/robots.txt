@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://eyobsalemot.com/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Disallow test pages from indexing
+Disallow: /test/
+Disallow: /api/
+Disallow: /admin/
+
+# Allow all other pages
+Allow: /
+Allow: /profile
+Allow: /portfolio/
+Allow: /community
+Allow: /tourism
+Allow: /contact
