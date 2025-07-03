@@ -385,23 +385,33 @@ export const sendBookingConfirmation = async (bookingData: any): Promise<EmailRe
     // Generate booking ID
     const bookingId = `BK${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`
 
-    // In a real application, you would use a service like:
-    // - Resend
-    // - SendGrid
-    // - AWS SES
-    // - Nodemailer with SMTP
+    // Create email transporter
+    const transporter = createTransporter()
 
-    // For now, we'll simulate email sending
-    console.log("📧 Sending booking confirmation email...")
-    console.log("To:", bookingData.email)
-    console.log("Booking ID:", bookingId)
-    console.log("Tour:", bookingData.tourType)
-    console.log("Date:", bookingData.selectedDate)
+    // Generate email content
+    const customerEmailHtml = generateBookingConfirmationEmail(bookingData, bookingId)
+    const adminEmailHtml = generateAdminNotificationEmail(bookingData, bookingId)
 
-    // Simulate email sending delay
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // Send email to customer
+    const customerEmailResult = await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to: bookingData.email,
+      subject: `Booking Confirmation - ${bookingId}`,
+      html: customerEmailHtml,
+    })
 
-    // Simulate success (in real app, this would be actual email sending)
+    // Send notification to admin
+    const adminEmailResult = await transporter.sendMail({
+      from: process.env.SMTP_USER,
+      to: process.env.ADMIN_EMAIL || process.env.SMTP_USER,
+      subject: `New Booking Request - ${bookingId}`,
+      html: adminEmailHtml,
+    })
+
+    console.log("📧 Booking confirmation emails sent successfully")
+    console.log("Customer email:", customerEmailResult.messageId)
+    console.log("Admin email:", adminEmailResult.messageId)
+
     return {
       success: true,
       bookingId,
